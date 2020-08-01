@@ -1,6 +1,10 @@
+import axios, { AxiosResponse } from 'axios';
+
 interface UserProps {
-  name?: string; // optional
-  age?: number; // optional
+  // ? = optional
+  id?: number; // will be given by backend server
+  name?: string;
+  age?: number;
 }
 
 type Callback = () => void; // type alias to keep things clean
@@ -36,5 +40,26 @@ export class User {
     handlers.forEach((callback) => {
       callback();
     });
+  }
+
+  fetch(): void {
+    axios
+      .get(`http://localhost:3000/users/${this.get('id')}`)
+      .then((response: AxiosResponse): void => {
+        this.set(response.data);
+      });
+  }
+
+  save(): void {
+    // create a new post: POST - /posts
+    // update a post: PUT - /posts/:id
+    const id = this.get('id');
+    if (id) {
+      // PUT
+      axios.put(`http://localhost:3000/users/${id}`, this.data);
+    } else {
+      // POST
+      axios.post('http://localhost:3000/users', this.data);
+    }
   }
 }
