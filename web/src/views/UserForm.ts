@@ -1,55 +1,42 @@
-import { User } from '../models/User';
+import { User, UserProps } from '../models/User';
+import { View } from './View';
 
-export class UserForm {
-  // base class of all HTML elements
-  constructor(public parent: Element, public model: User) {}
-
+export class UserForm extends View<User, UserProps> {
   eventsMap(): { [key: string]: () => void } {
     return {
-      'click:button': this.onButtonClick,
-      'mouseenter:h1': this.onHeaderHover,
+      'click:.set-age': this.onSetAgeClick, // query selector knows to look for class (.) or id (#)
+      'click:.set-name': this.onSetNameClick,
+      'click:.save-model': this.onSaveClick,
     };
   }
 
-  onHeaderHover(): void {
-    console.log('hover craft');
-  }
+  onSetAgeClick = (): void => {
+    this.model.setRandomAge();
+  };
 
-  onButtonClick(): void {
-    console.log('Hi There');
-  }
+  onSetNameClick = (): void => {
+    const input = this.parent.querySelector('input');
+
+    if (input) {
+      // type guard -> no null will get through -> makes ts happy
+      const name = input.value;
+
+      this.model.set({ name });
+    }
+  };
+
+  onSaveClick = (): void => {
+    this.model.save();
+  };
 
   template(): string {
     return `
       <div>
-        <h1>User Form</h1>
-        <div> User name: ${this.model.get('name')}</div>
-        <div> User name: ${this.model.get('age')}</div>
-        <input />
-        <button>Click Me</button>
-      </div>
+        <input placeholder="${this.model.get('name')}" />
+        <button class="set-name">Change Name</button>
+        <button class="set-age">Set Random Age</button>
+        <button class="save-model">Save User</button>
+        </div>
     `;
-  }
-
-  private bindEvents(fragment: DocumentFragment): void {
-    const eventsMap = this.eventsMap();
-
-    for (let eventKey in eventsMap) {
-      const [eventName, selector] = eventKey.split(':');
-
-      fragment.querySelectorAll(selector).forEach((element) => {
-        element.addEventListener(eventName, eventsMap[eventKey]);
-      });
-    }
-  }
-
-  render(): void {
-    // append template to parent
-    const templateElement = document.createElement('template');
-    templateElement.innerHTML = this.template(); // use string template to create html element 'template'
-
-    this.bindEvents(templateElement.content);
-
-    this.parent.append(templateElement.content);
   }
 }
