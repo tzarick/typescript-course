@@ -1,5 +1,9 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+# rrts = React Redux Typescript
+
+Simple app that fetches a todo list from [json placeholder](https://jsonplaceholder.typicode.com/) and allows deletion by clicking on item.
+
 ## Available Scripts
 
 In the project directory, you can run:
